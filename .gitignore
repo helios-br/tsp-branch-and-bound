@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Custom
+
+output/
+log.txt
+run.sh
