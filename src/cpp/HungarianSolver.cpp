@@ -14,15 +14,24 @@ Solution *HungarianSolver::solve()
 	int dimension = problem->dimension;
 
 	hungarian_problem_t p;
-	logn("hung0");
 	hungarian_init(&p, problem->cost, dimension, dimension, HUNGARIAN_MODE_MINIMIZE_COST);
-	logn("hung1");
-	hungarian_solve(&p);
-	logn("hung2");
+	if (p.problem)
+	{
+		hungarian_free(&p);
+		return NULL;
+	}
+	double cost = hungarian_solve(&p);
+	if (p.problem)
+	{
+		hungarian_free(&p);
+		return NULL;
+	}
 	Solution *solution = new Solution(problem, copyIntMatrix(p.assignment, dimension));
-	logn("hung3");
-
+	if (cost != solution->cost) {
+		cout << "++++++++++++++++++++ VIGE";
+		cout << "cost: " << cost << ", solution-cost: " << solution->cost << endl;
+		exit(0);
+	}
 	hungarian_free(&p);
-
 	return solution;
 };

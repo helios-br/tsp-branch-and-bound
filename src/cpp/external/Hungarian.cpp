@@ -364,14 +364,18 @@ int hungarian_solve(hungarian_problem_t* p) {
     for (l=0;l<n;l++)
       if (p->cost[k][l]<row_dec[k]-col_inc[l]) {
         logn("teste1");
-	exit(0);
+        p->problem = true;        
+        return 0;
+	    //exit(0);
       }
   for (k=0;k<m;k++)
     {
       l=col_mate[k];
       if (l<0 || p->cost[k][l]!=row_dec[k]-col_inc[l]) {
       logn("teste2");
-	exit(0);
+      p->problem = true;        
+        return 0;
+	//exit(0);
     }
     }
   k=0;
@@ -380,7 +384,9 @@ int hungarian_solve(hungarian_problem_t* p) {
       k++;
   if (k>m) {
       logn("teste3");
-    exit(0);
+      p->problem = true;        
+        return 0;
+    //exit(0);
   }
   // End doublecheck the solution 23
   // End Hungarian algorithm 18
@@ -415,6 +421,7 @@ int hungarian_solve(hungarian_problem_t* p) {
   free(row_dec);
   free(unchosen_row);
   free(col_mate);
+
   return cost;
 }
 

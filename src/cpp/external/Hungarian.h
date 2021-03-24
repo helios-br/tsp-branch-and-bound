@@ -41,6 +41,7 @@ typedef struct {
   int num_cols;
   int** cost;
   int** assignment;  
+  bool problem = false;
 } hungarian_problem_t;
 
 /** This method initialize the hungarian_problem structure and init 

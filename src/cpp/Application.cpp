@@ -1,5 +1,8 @@
 #include <iostream>
+#include <string>
 #include "external/Data.h"
+#include "util/StringUtil.h"
+#include "util/OutputUtil.h"
 #include "Problem.h"
 #include "Solver.h"
 #include "HungarianSolver.h"
@@ -24,8 +27,8 @@ void verify(int numberParameters)
 void solveProblem(Solver *solver)
 {
     Solution *solution = solver->solve();
-    cout << endl
-         << "Best solution found:" << endl;
+    logDashes();
+    cout << "Best solution found:" << endl;
     solution->printSolution(true);
     delete solver;
     delete solution;
@@ -33,13 +36,15 @@ void solveProblem(Solver *solver)
 
 int main(int argc, char **argv)
 {
+    // gr17, gr21, gr24, ulysses16
     try
     {
         // Validate parameters
         verify(argc);
 
         // Read instance data from filesystem
-        Data *data = new Data(argv[1]);
+        string fileName = argv[1];
+        Data *data = new Data(convertToChar(fileName + ".tsp"));
         data->readData();
 
         // Solve problem
@@ -48,6 +53,7 @@ int main(int argc, char **argv)
         //solveProblem(new InitialSolver(problem));
         //solveProblem(new HungarianSolver(problem));
         solveProblem(new BranchBoundSolver(problem));
+        printProblem(problem, true);
 
         //BranchBoundSolver *solver = new BranchBoundSolver(&problem);
         //Solution solution = solver->solve();
@@ -55,7 +61,7 @@ int main(int argc, char **argv)
         // Free memory
 
         delete problem;
-        delete data;        
+        delete data;
     }
     catch (invalid_argument &e)
     {

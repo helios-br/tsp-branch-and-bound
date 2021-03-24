@@ -31,8 +31,8 @@ struct Node
 
 struct Bounds
 {
-	double lowerBound{-1};
-	double upperBound{-1};
+	double lowerBound = -1;
+	double upperBound = GLOBAL_INFINITE_COST;
 };
 
 class BranchBoundSolver : public Solver

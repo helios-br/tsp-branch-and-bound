@@ -1,7 +1,7 @@
 #ifndef PROBLEM_H
 #define PROBLEM_H
 
-#define GLOBAL_INFINITE_COST 2147483647;
+#define GLOBAL_INFINITE_COST 99999999;
 
 #include <iostream>
 #include <vector>
@@ -23,7 +23,7 @@ struct Problem
   int problemId;
   int dimension;
   double **cost;
-  vector<Problem *> subProblems = {};
+  vector<pair<int, int>> blockedMoves;
 
   Problem(int problemId, int dimension, double **cost)
   {
@@ -32,18 +32,20 @@ struct Problem
     this->cost = cost;
   }
 
-  Problem(Problem *superProblem, int problemId)
-  {
-    this->problemId = problemId;
-    this->dimension = superProblem->dimension;
-    this->superProblem = superProblem;
-    this->cost = copyDoubleMatrix(superProblem->cost, superProblem->dimension);
-  }
+   Problem(Problem *superProblem, int problemId)
+   {
+     this->problemId = problemId;
+     this->dimension = superProblem->dimension;
+     this->superProblem = superProblem;
+     this->cost = copyDoubleMatrix(superProblem->cost, superProblem->dimension);
+     this->blockedMoves = superProblem->blockedMoves;
+   }
 
   Problem(Problem * problem) {
     this->problemId = problem->problemId;
     this->dimension = problem->dimension;
     this->cost = copyDoubleMatrix(problem->cost, problem->dimension);
+    this->blockedMoves = problem->blockedMoves;
   }
 
   ~Problem()
@@ -53,8 +55,9 @@ struct Problem
 
   void blockMove(int i, int j)
   {
+    blockedMoves.push_back({i, j});
     cost[i][j] = GLOBAL_INFINITE_COST;
-    cost[j][i] = GLOBAL_INFINITE_COST;
+    //cost[j][i] = GLOBAL_INFINITE_COST;
   }
 };
 
@@ -175,6 +178,6 @@ struct Solution
 
 Problem *createProblem(Data *data);
 Problem *copyProblem(Problem *superProblem);
-void printProblem(Problem *problem, bool showCost, bool showSubproblems);
+void printProblem(Problem *problem, bool showCost);
 
 #endif
