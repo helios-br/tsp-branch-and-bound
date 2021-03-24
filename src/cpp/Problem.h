@@ -73,12 +73,12 @@ struct Solution
   int **assignment;
   double cost;
 
-  Solution(Problem *problem, int **assignment)
+  Solution(Problem *problem, int **assignment, double cost)
   {
     this->problem = problem;
     this->dimension = problem->dimension;
     this->assignment = assignment;
-    this->cost = calculateCost(assignment, problem->cost, problem->dimension);
+    this->cost = cost;
   }
 
   Solution(Solution *solution)

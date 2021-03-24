@@ -71,7 +71,8 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 
 		if (solution->cost < this->bestSolution->cost)
 		{
-			cout << "@ Wow! New upper bound: " << solution->cost << " < " << this->bestSolution->cost << endl;
+			cout << "@ Wow! New upper bound: " << solution->cost << " < " << this->bestSolution->cost;
+			cout << " | Lower bound: " << this->bounds.lowerBound << endl;
 			delete this->bestSolution;
 			this->bestSolution = new Solution(solution);
 			this->bounds.upperBound = solution->cost;

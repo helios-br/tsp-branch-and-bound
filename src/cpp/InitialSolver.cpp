@@ -40,5 +40,5 @@ Solution *InitialSolver::solve()
 
 	assignment[node][0] = 1;
 
-	return new Solution(problem, assignment);
+	return new Solution(problem, assignment, calculateCost(assignment, problem->cost, dimension));
 };

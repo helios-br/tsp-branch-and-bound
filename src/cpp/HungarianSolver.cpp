@@ -26,12 +26,12 @@ Solution *HungarianSolver::solve()
 		hungarian_free(&p);
 		return NULL;
 	}
-	Solution *solution = new Solution(problem, copyIntMatrix(p.assignment, dimension));
+	Solution *solution = new Solution(problem, p.assignment, cost);
 	if (cost != solution->cost) {
 		cout << "++++++++++++++++++++ VIGE";
 		cout << "cost: " << cost << ", solution-cost: " << solution->cost << endl;
 		exit(0);
 	}
-	hungarian_free(&p);
+	custom_hungarian_free(&p);
 	return solution;
 };

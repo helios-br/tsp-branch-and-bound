@@ -36,7 +36,8 @@ void solveProblem(Solver *solver)
 
 int main(int argc, char **argv)
 {
-    // gr17, gr21, gr24, ulysses16
+    // done: burma14, gr17, gr21, gr24, ulysses16
+    
     try
     {
         // Validate parameters

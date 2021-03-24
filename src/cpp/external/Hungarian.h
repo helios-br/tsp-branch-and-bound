@@ -56,6 +56,8 @@ int hungarian_init(hungarian_problem_t* p,
 /** Free the memory allocated by init. **/
 void hungarian_free(hungarian_problem_t* p);
 
+void custom_hungarian_free(hungarian_problem_t* p);
+
 /** This method computes the optimal assignment. **/
 int hungarian_solve(hungarian_problem_t* p);
 

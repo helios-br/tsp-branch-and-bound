@@ -126,13 +126,21 @@ int hungarian_init(hungarian_problem_t* p, double** cost_matrix, int rows, int c
 
 void hungarian_free(hungarian_problem_t* p) {
   for(int i=0; i<p->num_rows; i++) {
-    //free(p->cost[i]);
+    free(p->cost[i]);
     free(p->assignment[i]);
   }
-  //free(p->cost);
+  free(p->cost);
   free(p->assignment);
   p->cost = NULL;
   p->assignment = NULL;
+}
+
+void custom_hungarian_free(hungarian_problem_t* p) {
+  for(int i=0; i<p->num_rows; i++) {
+    free(p->cost[i]);
+  }
+  free(p->cost);
+  p->cost = NULL;
 }
 
 int hungarian_solve(hungarian_problem_t* p) {
