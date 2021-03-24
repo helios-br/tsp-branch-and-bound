@@ -77,6 +77,8 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 			this->bounds.upperBound = solution->cost;
 		}
 
+		delete solution;
+
 		// Bound
 
 		return;
@@ -90,6 +92,7 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 
 		if (solution->cost > this->bounds.upperBound)
 		{
+			delete solution;
 			return;
 		}
 
