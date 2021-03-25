@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     }
     catch (invalid_argument &e)
     {
-        logn("Unhandled exception thrown: " << e.what());
+        logn("Unhandled exception thrown: " + string(e.what()));
         return 1;
     }
 
