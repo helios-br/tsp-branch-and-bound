@@ -34,18 +34,29 @@ void solveProblem(Solver *solver)
     delete solution;
 }
 
+string normalizeFileName(char *parameter)
+{
+    string fileName = parameter;
+    size_t foundDot = fileName.find(".");
+    if (foundDot != string::npos)
+    {
+        return fileName;
+    }
+    return fileName + ".tsp";
+}
+
 int main(int argc, char **argv)
 {
-    // done: burma14, gr17, gr21, gr24, ulysses16
-    
+    // done: burma14 (3323), gr17 (2085), gr21 (2707), gr24 (1272), ulysses16 (6859), bays29 (2020), bayg29 (1610)
+
     try
     {
         // Validate parameters
         verify(argc);
 
         // Read instance data from filesystem
-        string fileName = argv[1];
-        Data *data = new Data(convertToChar(fileName + ".tsp"));
+        string fileName = normalizeFileName(argv[1]);
+        Data *data = new Data(convertToChar(fileName));
         data->readData();
 
         // Solve problem
@@ -56,9 +67,6 @@ int main(int argc, char **argv)
         solveProblem(new BranchBoundSolver(problem));
         printProblem(problem, true);
 
-        //BranchBoundSolver *solver = new BranchBoundSolver(&problem);
-        //Solution solution = solver->solve();
-
         // Free memory
 
         delete problem;
@@ -66,7 +74,7 @@ int main(int argc, char **argv)
     }
     catch (invalid_argument &e)
     {
-        cout << "Unhandled exception thrown: " << e.what() << endl;
+        logn("Unhandled exception thrown: " << e.what());
         return 1;
     }
 
