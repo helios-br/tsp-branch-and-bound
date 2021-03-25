@@ -12,6 +12,13 @@ using namespace std;
 
 double calculateCost(int **assignment, double **cost, int dimension);
 
+struct Bounds
+{
+	double lowerBound = -1;
+	double upperBound = GLOBAL_INFINITE_COST;
+	double lowestBound = -1;
+};
+
 /**
  * Struct: Problem
  *
@@ -23,6 +30,7 @@ struct Problem
   int problemId;
   int dimension;
   double **cost;
+  double solutionCost = -1;
   vector<pair<int, int>> blockedMoves;
 
   Problem(int problemId, int dimension, double **cost)
@@ -44,6 +52,7 @@ struct Problem
   Problem(Problem * problem) {
     this->problemId = problem->problemId;
     this->dimension = problem->dimension;
+    this->solutionCost = problem->solutionCost;
     this->cost = copyDoubleMatrix(problem->cost, problem->dimension);
     this->blockedMoves = problem->blockedMoves;
   }
@@ -57,7 +66,6 @@ struct Problem
   {
     blockedMoves.push_back({i, j});
     cost[i][j] = GLOBAL_INFINITE_COST;
-    //cost[j][i] = GLOBAL_INFINITE_COST;
   }
 };
 
@@ -76,6 +84,7 @@ struct Solution
   Solution(Problem *problem, int **assignment, double cost)
   {
     this->problem = problem;
+    problem->solutionCost = cost;
     this->dimension = problem->dimension;
     this->assignment = assignment;
     this->cost = cost;

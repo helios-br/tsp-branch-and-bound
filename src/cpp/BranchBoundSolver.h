@@ -9,32 +9,6 @@
 
 using namespace std;
 
-struct Node
-{
-	int id;
-	Problem *problem;
-	Solution *solution;
-
-	Node(Solution *solution)
-	{
-		this->id = solution->problem->problemId;
-		this->solution = solution;
-		this->problem = solution->problem;
-	}
-
-	~Node()
-	{
-		delete solution;
-		delete problem;
-	}
-};
-
-struct Bounds
-{
-	double lowerBound = -1;
-	double upperBound = GLOBAL_INFINITE_COST;
-};
-
 class BranchBoundSolver : public Solver
 {
 public:

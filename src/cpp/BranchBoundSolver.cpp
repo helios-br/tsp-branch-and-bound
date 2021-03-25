@@ -11,8 +11,7 @@ using namespace std;
 
 Solution *BranchBoundSolver::solve()
 {
-	cout << endl
-		 << "---- Solver: Branch and Bound" << endl;
+	nlogn("---- Solver: Branch and Bound");
 
 	Problem *originalProblem = this->problem;
 
@@ -21,8 +20,7 @@ Solution *BranchBoundSolver::solve()
 	InitialSolver *initialSolver = new InitialSolver(originalProblem);
 	Solution *initialSolution = initialSolver->solve();
 	delete initialSolver;
-	cout << endl
-		 << "Initial solution found..." << endl;
+	nlogn("Initial solution found...");	
 	initialSolution->printSolution(false);
 
 	// Sets upper bound
@@ -47,35 +45,44 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 
 	if (!solution)
 	{
-		cout << "%%%% ENTROU ONDE NAO DEVIA" << endl;
-		return;
+		nlogn("[ERROR] HUNGARIAN ALGORITHM RETURNED AN EMPTY SOLUTION");
+		exit(0);
+	}
+
+	// Lowest possible bound
+
+	if (this->bounds.lowestBound == -1)
+	{
+		this->bounds.lowestBound = solution->cost;
 	}
 
 	vector<vector<int>> tours = solution->extractTours();
 
-	// cout << endl
-	// 	 << "----" << endl;
-	// cout << "---- Problem [" << problem->problemId << "]: new hungarian solution found " << endl;
-	// cout << "----" << endl
-	// 	 << endl;
-
-	// cout << "# Best value so far: " << this->bestSolution->cost << endl;
-
-	//solution->printSolution(false);
-
-	// Solution feasible found
+	// Check whether a feasible solution was found
 
 	if (tours.size() == 1)
 	{
-		//cout << "# Solution is feasible!" << endl;
+		// logn("# Solution is feasible!");
+
+		if (solution->cost == this->bounds.lowestBound)
+		{
+			nlogn("@ Amazing! Best solution found using lower bound!");
+			solution->printSolution(true);
+			exit(0);
+		}
 
 		if (solution->cost < this->bestSolution->cost)
 		{
-			cout << "@ Wow! New upper bound: " << solution->cost << " < " << this->bestSolution->cost;
-			cout << " | Lower bound: " << this->bounds.lowerBound << endl;
+			logn("@ Wow! New best solution: " + to_string(solution->cost) + " < " + to_string(this->bestSolution->cost));
 			delete this->bestSolution;
 			this->bestSolution = new Solution(solution);
 			this->bounds.upperBound = solution->cost;
+
+			if (this->bounds.lowerBound > this->bounds.upperBound)
+			{
+				logn("# Reseting lowerbound!");
+				this->bounds.lowerBound = this->bounds.lowestBound;
+			}
 		}
 
 		delete solution;
@@ -86,21 +93,12 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 	}
 	else
 	{
-		// if (solution->cost < this->bounds.lowerBound)
-		// {
-		// 	return;
-		// }
+		// Verify upper bound
 
 		if (solution->cost > this->bounds.upperBound)
 		{
 			delete solution;
 			return;
-		}
-
-		if (solution->cost > this->bounds.lowerBound && solution->cost < this->bounds.upperBound)
-		{
-			//cout << "New lower bound: " << solution->cost << " > " << this->bounds.lowerBound << endl;
-			this->bounds.lowerBound = solution->cost;
 		}
 	}
 
@@ -124,18 +122,6 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 		}
 	}
 
-	// Creates a new node for each arch of the subtour (blocking)
-
-	//solution->printTours();
-	//cout << "Tour index chosen: " << smallestSubtourIndex << endl;
-
-	//cout << "***** blocking moves: ";
-	// for (unsigned j = 0; j < tours[smallestSubtourIndex].size() - 1; j++)
-	// {
-	// 	cout << tours[smallestSubtourIndex][j] << " -> " << tours[smallestSubtourIndex][j + 1] << " | ";
-	// }
-	// cout << endl;
-
 	delete solution;
 
 	for (unsigned j = 0; j < tours[smallestSubtourIndex].size() - 1; j++)
@@ -145,5 +131,5 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 		//printProblem(subProblem, false);
 		solveProblem(subProblem);
 		delete subProblem;
-	}	
+	}
 }
