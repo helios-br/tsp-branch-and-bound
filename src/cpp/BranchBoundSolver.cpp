@@ -77,12 +77,6 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 			delete this->bestSolution;
 			this->bestSolution = new Solution(solution);
 			this->bounds.upperBound = solution->cost;
-
-			if (this->bounds.lowerBound > this->bounds.upperBound)
-			{
-				logn("# Reseting lowerbound!");
-				this->bounds.lowerBound = this->bounds.lowestBound;
-			}
 		}
 
 		delete solution;

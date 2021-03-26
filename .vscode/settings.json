@@ -8,6 +8,17 @@
 		"initializer_list": "cpp",
 		"utility": "cpp",
 		"tuple": "cpp",
-		"string": "cpp"
+		"string": "cpp",
+		"vector": "cpp",
+		"deque": "cpp",
+		"list": "cpp",
+		"bitset": "cpp",
+		"regex": "cpp",
+		"unordered_map": "cpp",
+		"unordered_set": "cpp",
+		"variant": "cpp",
+		"forward_list": "cpp",
+		"valarray": "cpp",
+		"*.tcc": "cpp"
 	}
 }

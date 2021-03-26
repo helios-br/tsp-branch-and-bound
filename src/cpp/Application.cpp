@@ -9,6 +9,7 @@
 #include "InitialSolver.h"
 #include "BranchBoundSolver.h"
 #include "BreadthBranchBoundSolver.h"
+#include "BestBranchBoundSolver.h"
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -70,7 +71,8 @@ int main(int argc, char **argv)
         //solveProblem(new InitialSolver(problem));
         //solveProblem(new HungarianSolver(problem));
         //solveProblem(new BranchBoundSolver(problem));
-        solveProblem(new BreadthBranchBoundSolver(problem));
+        //solveProblem(new BreadthBranchBoundSolver(problem));
+        solveProblem(new BestBranchBoundSolver(problem));
         printProblem(problem, true);
 
         // Free memory
