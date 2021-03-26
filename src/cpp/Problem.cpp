@@ -14,6 +14,13 @@ Problem *createProblem(Data *data)
     return new Problem(problemId, dimension, copyDoubleMatrix(data->getMatrixCost(), dimension));
 }
 
+Problem *createProblemBlockingNodes(Problem *problem, vector<pair<int, int>> blockedNodes)
+{
+    int problemId = ++PROBLEM_ID_COUNTER;
+    int dimension = problem->dimension;
+    return new Problem(problemId, dimension, copyDoubleMatrix(problem->cost, dimension), blockedNodes);
+}
+
 Problem *copyProblem(Problem *superProblem)
 {
     int problemId = ++PROBLEM_ID_COUNTER;

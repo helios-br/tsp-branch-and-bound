@@ -1,4 +1,4 @@
-#include "BranchBoundSolver.h"
+#include "BreadthBranchBoundSolver.h"
 
 #include <iostream>
 #include <vector>
@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Solution *BranchBoundSolver::solve()
+Solution *BreadthBranchBoundSolver::solve()
 {
 	nlogn("---- Solver: Branch and Bound");
 
@@ -20,7 +20,7 @@ Solution *BranchBoundSolver::solve()
 	InitialSolver *initialSolver = new InitialSolver(originalProblem);
 	Solution *initialSolution = initialSolver->solve();
 	delete initialSolver;
-	nlogn("Initial solution found...");	
+	nlogn("Initial solution found...");
 	initialSolution->printSolution(false);
 
 	// Sets upper bound
@@ -37,11 +37,63 @@ Solution *BranchBoundSolver::solve()
 	return this->bestSolution;
 };
 
-void BranchBoundSolver::solveProblem(Problem *problem)
+void BreadthBranchBoundSolver::solveProblem(Problem *problem)
 {
-	HungarianSolver *hungarianSolver = new HungarianSolver(problem);
+	Node firstNode;
+	list<Node> queue;
+	queue.push_back(firstNode);
+
+	while (queue.size() > 0)
+	{
+		Node node = queue.front();
+		Solution *solution = solveNodeProblem(&node);
+
+		if (!node.bounded)
+		{
+			vector<vector<int>> tours = solution->extractTours();
+
+			// Finds the smaller subtour from the solution
+
+			int smallestSubtourIndex = -1;
+			int smallestSubtourSize = -1;
+
+			for (unsigned i = 0; i < tours.size(); i++)
+			{
+				int subtourSize = tours[i].size();
+
+				if (smallestSubtourSize == -1 || subtourSize < smallestSubtourSize)
+				{
+					smallestSubtourIndex = i;
+					smallestSubtourSize = subtourSize;
+				}
+				else if (subtourSize == smallestSubtourSize && tours[i][0] < tours[smallestSubtourIndex][0])
+				{
+					smallestSubtourIndex = i;
+				}
+			}
+
+			for (unsigned j = 0; j < tours[smallestSubtourIndex].size() - 1; j++)
+			{
+				Node newNode;
+				newNode.blockedArches = node.blockedArches;
+				pair<int, int> arch(tours[smallestSubtourIndex][j], tours[smallestSubtourIndex][j + 1]);
+				newNode.blockedArches.push_back(arch);
+				queue.push_back(newNode);
+			}
+		}
+
+		delete solution;
+		queue.pop_front();
+	}
+}
+
+Solution *BreadthBranchBoundSolver::solveNodeProblem(Node *node)
+{
+	Problem *subProblem = createProblemBlockingNodes(this->problem, node->blockedArches);
+	HungarianSolver *hungarianSolver = new HungarianSolver(subProblem);
 	Solution *solution = hungarianSolver->solve();
 	delete hungarianSolver;
+	delete subProblem;
 
 	if (!solution)
 	{
@@ -62,8 +114,6 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 
 	if (tours.size() == 1)
 	{
-		// logn("# Solution is feasible!");
-
 		if (solution->cost == this->bounds.lowestBound)
 		{
 			nlogn("@ Amazing! Best solution found using lower bound!");
@@ -85,11 +135,7 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 			}
 		}
 
-		delete solution;
-
-		// Bound
-
-		return;
+		node->bounded = true;
 	}
 	else
 	{
@@ -97,38 +143,9 @@ void BranchBoundSolver::solveProblem(Problem *problem)
 
 		if (solution->cost > this->bounds.upperBound)
 		{
-			delete solution;
-			return;
+			node->bounded = true;
 		}
 	}
 
-	// Finds the smaller subtour from the solution
-
-	int smallestSubtourIndex = -1;
-	int smallestSubtourSize = -1;
-
-	for (unsigned i = 0; i < tours.size(); i++)
-	{
-		int subtourSize = tours[i].size();
-
-		if (smallestSubtourSize == -1 || subtourSize < smallestSubtourSize)
-		{
-			smallestSubtourIndex = i;
-			smallestSubtourSize = subtourSize;
-		}
-		else if (subtourSize == smallestSubtourSize && tours[i][0] < tours[smallestSubtourIndex][0])
-		{
-			smallestSubtourIndex = i;
-		}
-	}
-
-	delete solution;
-
-	for (unsigned j = 0; j < tours[smallestSubtourIndex].size() - 1; j++)
-	{
-		Problem *subProblem = copyProblem(problem);
-		subProblem->blockMove(tours[smallestSubtourIndex][j], tours[smallestSubtourIndex][j + 1]);;
-		solveProblem(subProblem);
-		delete subProblem;
-	}
+	return solution;
 }

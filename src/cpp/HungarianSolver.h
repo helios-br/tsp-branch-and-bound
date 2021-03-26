@@ -3,6 +3,7 @@
 
 #include "Solver.h"
 #include "Problem.h"
+#include <vector>
 
 class HungarianSolver : public Solver
 {

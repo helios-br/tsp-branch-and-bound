@@ -15,23 +15,14 @@ Solution *HungarianSolver::solve()
 
 	hungarian_problem_t p;
 	hungarian_init(&p, problem->cost, dimension, dimension, HUNGARIAN_MODE_MINIMIZE_COST);
-	if (p.problem)
-	{
-		hungarian_free(&p);
-		return NULL;
-	}
 	double cost = hungarian_solve(&p);
-	if (p.problem)
-	{
-		hungarian_free(&p);
-		return NULL;
-	}
 	Solution *solution = new Solution(problem, p.assignment, cost);
+
 	if (cost != solution->cost) {
-		cout << "++++++++++++++++++++ VIGE";
-		cout << "cost: " << cost << ", solution-cost: " << solution->cost << endl;
+		nlogn("[ERROR] Solution cost (" + to_string(cost) + ") differs from hungarian algorithm cost (" + to_string(solution->cost) + ")");
 		exit(0);
 	}
+
 	custom_hungarian_free(&p);
 	return solution;
 };

@@ -40,6 +40,16 @@ struct Problem
     this->cost = cost;
   }
 
+  Problem(int problemId, int dimension, double **cost, vector<pair<int, int>> blockedNodes)
+  {
+    this->problemId = problemId;
+    this->dimension = dimension;
+    this->cost = cost;
+    for (pair<int, int> item : blockedNodes) {
+      this->cost[item.first][item.second] = GLOBAL_INFINITE_COST;
+    }
+  }
+
    Problem(Problem *superProblem, int problemId)
    {
      this->problemId = problemId;
@@ -80,6 +90,8 @@ struct Solution
   int dimension;
   int **assignment;
   double cost;
+  bool toursExtracted = false;
+  vector<vector<int>> allTours;
 
   Solution(Problem *problem, int **assignment, double cost)
   {
@@ -105,7 +117,9 @@ struct Solution
 
   vector<vector<int>> extractTours()
   {
-    vector<vector<int>> allTours;
+    if (this->toursExtracted) {
+      return this->allTours;
+    }
 
     int nodesProcessed[dimension] = {};
     int node = 0;
@@ -135,7 +149,7 @@ struct Solution
           else
           {
             tour.push_back(node);
-            allTours.push_back(tour);
+            this->allTours.push_back(tour);
             node = 0;
             break;
           }
@@ -147,7 +161,8 @@ struct Solution
       }
     }
 
-    return allTours;
+    this->toursExtracted = true;  
+    return this->allTours;
   }
 
   bool isSolutionFeasible()
@@ -188,5 +203,6 @@ struct Solution
 Problem *createProblem(Data *data);
 Problem *copyProblem(Problem *superProblem);
 void printProblem(Problem *problem, bool showCost);
+Problem *createProblemBlockingNodes(Problem *problem, vector<pair<int, int>> blockedNodes);
 
 #endif
