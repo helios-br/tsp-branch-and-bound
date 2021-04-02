@@ -25,10 +25,9 @@ Solution *BestBranchBoundSolver::solve()
 
 	// Sets upper bound
 
+	//this->bounds.upperBound = initialSolution->cost;
 	this->bounds.upperBound = GLOBAL_INFINITE_COST;
-
-	// this->bounds.upperBound = initialSolution->cost;
-	// this->bestSolution = initialSolution;
+	this->bestSolution = initialSolution;
 
 	/** Branch and bound algorithm */
 
@@ -49,14 +48,15 @@ void BestBranchBoundSolver::solveProblem(Problem *problem)
 
 	while (queue.size() > 0)
 	{
-		//cout << "Queue size: " << queue.size() << endl;
+		//cout << "----------------- NEW ITERATION -----------------" << endl;
+		//cout << "Queue size: " << queue.size() << ". Best cost: " << this->bounds.upperBound << endl;
 		auto bestIterator = queue.begin();
 		for (auto iterator = queue.begin(); iterator != queue.end(); iterator++)
 		{
 			NodeBest item = *iterator;
 			NodeBest bestItem = *bestIterator;
 			//cout << "[" << item.id << ": " << item.solution->cost << "] ";
-			if (item.solution->cost > bestItem.solution->cost)
+			if (item.solution->cost < bestItem.solution->cost)
 			{
 				bestIterator = iterator;
 			}
@@ -102,12 +102,13 @@ void BestBranchBoundSolver::solveProblem(Problem *problem)
 			Solution *newSolution = solveNodeProblem(&node);
 			if (!node.bounded)
 			{
-				//cout << "New node! Node id:  " << newNode.id << endl;
+				//cout << "New node id:  " << newNode.id << endl;
 				newNode.solution = newSolution;
 				queue.push_back(newNode);
 			}
 			else
 			{
+				cout << "Deleted node id:  " << newNode.id << endl;
 				delete newSolution;
 			}
 		}
@@ -131,30 +132,18 @@ Solution *BestBranchBoundSolver::solveNodeProblem(NodeBest *node)
 		exit(0);
 	}
 
-	// Lowest possible bound
-
-	if (this->bounds.lowestBound == -1)
-	{
-		this->bounds.lowestBound = solution->cost;
-	}
-
 	vector<vector<int>> tours = solution->extractTours();
 
 	// Check whether a feasible solution was found
 
 	if (tours.size() == 1)
 	{
-		if (solution->cost == this->bounds.lowestBound)
-		{
-			nlogn("@ Amazing! Best solution found using lower bound!");
-			solution->printSolution(true);
-			exit(0);
-		}
-
+		cout << "upper bound: " << this->bounds.upperBound << ", solution cost: " << solution->cost << endl;
 		if (solution->cost < this->bounds.upperBound)
 		{
 			logn("@ Wow! New best solution: " + to_string(solution->cost) + " < " + to_string(this->bounds.upperBound));
-			if (this->bounds.upperBound != GLOBAL_INFINITE_COST)
+			double infinite = GLOBAL_INFINITE_COST;
+			if (this->bounds.upperBound != infinite)
 			{
 				delete this->bestSolution;
 			}
@@ -171,6 +160,7 @@ Solution *BestBranchBoundSolver::solveNodeProblem(NodeBest *node)
 		if (solution->cost > this->bounds.upperBound)
 		{
 			node->bounded = true;
+			//cout << "Not feasible. Higher than upper bound!" << endl;
 		}
 	}
 
